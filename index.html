@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8" />
+  <title>تعلم الحروف العربية</title>
+  <link href="https://fonts.googleapis.com/css2?family=Amiri&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Cairo', sans-serif;
+      direction: rtl;
+      background: url('images/bg.jpg') no-repeat center center fixed;
+      background-size: cover;
+      margin: 0;
+      padding-top: 60px;
+      text-align: center;
+    }
+
+    .screen {
+      display: none;
+    }
+    .screen.active {
+      display: block;
+    }
+
+    .menu-buttons {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      margin: 0 auto;
+    }
+
+    .menu-buttons button {
+      font-size: 22px;
+      padding: 20px;
+      border: none;
+      border-radius: 15px;
+      cursor: pointer;
+      background: rgba(255, 255, 255, 0.7);
+      color: #000;
+      width: 300px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      transition: 0.3s;
+    }
+
+    .menu-buttons button:hover {
+      transform: scale(1.03);
+    }
+
+    #letter {
+      font-size: 150px;
+      color: #e60000;
+      background: #fff;
+      border-radius: 20px;
+      width: 200px;
+      margin: 0 auto 30px;
+      padding: 20px 0;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      animation: zoomIn 0.5s ease;
+      font-family: 'Amiri', serif;
+    }
+
+    @keyframes zoomIn {
+      from {
+        transform: scale(0.6);
+        opacity: 0;
+      }
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .form-row {
+      display: flex;
+      justify-content: center;
+      gap: 80px;
+      margin-top: 20px;
+    }
+
+    .form-box {
+      background: rgba(255, 255, 255, 0.5);
+      border-radius: 20px;
+      padding: 20px;
+      min-width: 180px;
+    }
+
+    .label {
+      font-size: 18px;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+
+    .shape {
+      font-size: 50px;
+      font-weight: bold;
+      text-shadow: 2px 2px 4px #ccc;
+    }
+
+    .first {
+      color: #007bff;
+    }
+    .middle {
+      color: #28a745;
+    }
+    .last {
+      color: #ff8800;
+    }
+
+    .controls {
+      position: fixed;
+      right: 20px;
+      top: 120px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 12px;
+      z-index: 999;
+    }
+    button,
+    select {
+      font-size: 16px;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+
+    button {
+      background-color: #4caf50;
+      color: white;
+    }
+
+    button:hover {
+      background-color: #388e3c;
+      transform: scale(1.05);
+    }
+
+    select {
+      background-color: white;
+      border: 1px solid #ccc;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .back-btn {
+      margin-top: 40px;
+      font-size: 18px;
+      background: #dc3545;
+    }
+
+    .back-btn:hover {
+      background: #c82333;
+    }
+
+    .guess-controls {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    #popup {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.9);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      font-size: 80px;
+      font-weight: bold;
+      text-align: center;
+      flex-direction: column;
+    }
+
+    #popup span {
+      font-size: 28px;
+      margin-top: 20px;
+    }
+
+    /* --- locateLetter styles --- */
+    #locateLetter .locate-container input, 
+    #locateLetter .locate-container button {
+      font-size: 20px;
+      padding: 10px;
+      margin: 10px;
+      border-radius: 8px;
+      border: none;
+    }
+    #locateLetter .locate-container {
+      margin-top: 30px;
+    }
+    #locateLetter #locLetterDisplay {
+      font-size: 28px;
+      margin-top: 18px;
+      margin-bottom: 10px;
+    }
+    #locateLetter #locWordDisplay {
+      font-size: 38px;
+      margin: 16px;
+    }
+    #locateLetter .loc-highlight {
+      color: #e60000;
+      font-weight: bold;
+      font-size: 1.1em;
+    }
+    #locateLetter .loc-choice-button {
+      margin: 10px;
+      padding: 12px 22px;
+      font-size: 22px;
+      border-radius: 9px;
+      cursor: pointer;
+      background: #fff;
+      color: #222;
+      border: 1px solid #aaa;
+      transition: 0.2s;
+    }
+    #locateLetter .loc-choice-button:hover {
+      background: #4caf50;
+      color: #fff;
+      border-color: #388e3c;
+    }
+    #locateLetter #locNewWordBtn {
+      margin-top: 25px;
+      display: none;
+    }
+    #locateLetter #locFeedbackPopup {
+      display: none;
+      position: fixed;
+      top: 48%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 22px 32px;
+      font-size: 32px;
+      border-radius: 15px;
+      font-weight: bold;
+      z-index: 10000;
+      color: #fff;
+      background-color: rgba(44,44,44,0.92);
+      text-align: center;
+      pointer-events: none;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.23);
+    }
+  </style>
+</head>
+<body>
+  <div id="popup">
+    <div id="popupMark"></div>
+    <span id="popupText"></span>
+  </div>
+
+  <div id="homeScreen" class="screen active">
+    <h1>مرحبًا بك في موقع تعلم الحروف</h1>
+    <div class="menu-buttons">
+      <button onclick="showScreen('readCard')">📖 قراءة البطاقة</button>
+      <button onclick="showScreen('guessLetter')">🧠 اختر الحرف الصحيح</button>
+      <button onclick="showScreen('locateLetter')">📍 تحديد موقع الحرف</button>
+    </div>
+  </div>
+<div class="mute-control" style="position: fixed; top: 20px; right: 20px; z-index: 10000;">
+  <button onclick="toggleMute()" id="muteButton">🔊 كتم الصوت</button>
+</div>
+  <div id="readCard" class="screen">
+    <h1>الحرف الحالي:</h1>
+    <div id="letter">؟</div>
+    <div id="forms"></div>
+
+    <div class="controls">
+      <select id="letterSelect" onchange="selectLetter(this.value)">
+        <option value="">اختر حرفًا</option>
+      </select>
+      <button onclick="nextLetter()">🔁 حرف عشوائي</button>
+    </div>
+
+    <button class="back-btn" onclick="showScreen('homeScreen')">⬅ العودة إلى القائمة الرئيسية</button>
+
+    <audio id="audio"></audio>
+    <audio id="soundCorrect" src="sounds/correct.mp3"></audio>
+    <audio id="soundWrong" src="sounds/wrong.mp3"></audio>
+    <audio id="soundClick" src="sounds/click.mp3"></audio>
+  </div>
+  <div id="guessLetter" class="screen">
+    <h1>اختر الحرف الأول من الكلمة</h1>
+<div id="inputContainer" style="margin: 30px auto; width: 280px;">
+  <input
+    type="text"
+    id="wordInput"
+    placeholder="اكتب كلمة"
+    style="font-size: 24px; padding: 10px; width: 250px; border-radius: 8px"
+  />
+</div>
+
+    <div id="wordDisplay" style="font-size: 40px; margin-top: 20px"></div>
+
+    <div id="guessSection" class="guess-controls" style="display: none">
+      <label for="guessSelect">حدد الحرف الأول:</label>
+      <select id="guessSelect">
+        <option value="">-- اختر --</option>
+      </select>
+    </div>
+
+    <div
+      id="resultMessage"
+      style="margin-top: 30px; font-size: 28px; font-weight: bold"
+    ></div>
+
+    <button
+      id="newWordBtn"
+      onclick="resetGuess()"
+      style="display: none; margin-top: 20px"
+    >
+      🔁 كلمة جديدة
+    </button>
+
+    <button class="back-btn" onclick="showScreen('homeScreen')">
+      ⬅ العودة إلى القائمة الرئيسية
+    </button>
+  </div>
+
+  <!-- دمج تحديد موقع الحرف هنا -->
+  <div id="locateLetter" class="screen">
+    <h1>تحديد موقع الحرف</h1>
+    <div class="locate-container">
+      <input type="text" id="locateWordInput" placeholder="أدخل كلمة (3 أحرف على الأقل)">
+      <div id="locLetterDisplay"></div>
+      <div id="locWordDisplay"></div>
+      <div id="locChoices" style="margin-top: 18px;"></div>
+      <button id="locNewWordBtn">🔁 كلمة جديدة</button>
+      <div id="locFeedbackPopup"></div>
+    </div>
+    <button class="back-btn" onclick="showScreen('homeScreen')">
+      ⬅ العودة إلى القائمة الرئيسية
+    </button>
+  </div>
+  
+<script>
+  const letters = [
+    "أ", "ب", "ت", "ث", "ج", "ح", "خ", "د", "ذ", "ر",
+    "ز", "س", "ش", "ص", "ض", "ط", "ظ", "ع", "غ", "ف",
+    "ق", "ك", "ل", "م", "ن", "ه", "و", "ي"
+  ];
+  const nonConnectingLetters = ["ا", "أ", "د", "ذ", "ر", "ز", "و"];
+  let isMuted = false;
+  let wordEntered = ""; // متغير عالمي لتخزين الكلمة المدخلة
+
+  const selectElement = document.getElementById("letterSelect");
+  const guessSelect = document.getElementById("guessSelect");
+  // تعبئة قوائم الحروف في القوائم المنسدلة
+  letters.forEach(letter => {
+    const opt1 = document.createElement("option");
+    opt1.value = letter;
+    opt1.textContent = letter;
+    selectElement.appendChild(opt1);
+
+    const opt2 = document.createElement("option");
+    opt2.value = letter;
+    opt2.textContent = letter;
+    guessSelect.appendChild(opt2.cloneNode(true));
+  });
+
+  function getLetterForms(letter) {
+    if (nonConnectingLetters.includes(letter)) {
+      return {
+        first: letter,
+        middle: "ــ" + letter,
+        last: "ــ" + letter
+      };
+    } else {
+      return {
+        first: letter + "ــ",
+        middle: "ــ" + letter + "ــ",
+        last: "ــ" + letter
+      };
+    }
+  }
+
+  function playLetter(letter) {
+    const letterDiv = document.getElementById("letter");
+    letterDiv.textContent = letter;
+    letterDiv.style.animation = "none";
+    setTimeout(() => {
+      letterDiv.style.animation = "zoomIn 0.5s ease";
+    }, 10);
+
+    const forms = getLetterForms(letter);
+    document.getElementById("forms").innerHTML = `
+      <div class="form-row">
+        <div class="form-box">
+          <div class="label">أول الكلمة</div>
+          <div class="shape first">${forms.first}</div>
+        </div>
+        <div class="form-box">
+          <div class="label">وسط الكلمة</div>
+          <div class="shape middle">${forms.middle}</div>
+        </div>
+        <div class="form-box">
+          <div class="label">آخر الكلمة</div>
+          <div class="shape last">${forms.last}</div>
+        </div>
+      </div>
+    `;
+    if (!isMuted) {
+      const audio = document.getElementById("audio");
+      audio.src = `sounds/${letter}.mp3`;
+      audio.oncanplaythrough = () => audio.play();
+      audio.onerror = () =>
+        console.warn(`ملف صوتي غير موجود: sounds/${letter}.mp3`);
+    }
+  }
+
+  function nextLetter() {
+    const randomIndex = Math.floor(Math.random() * letters.length);
+    const letter = letters[randomIndex];
+    playLetter(letter);
+    selectElement.value = letter;
+  }
+
+  function selectLetter(value) {
+    if (value) playLetter(value);
+  }
+
+  function toggleMute() {
+    isMuted = !isMuted;
+    const btn = document.getElementById("muteButton");
+    btn.textContent = isMuted ? "🔇 تشغيل الصوت" : "🔊 كتم الصوت";
+  }
+
+  function showScreen(id) {
+    document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+    document.getElementById(id).classList.add("active");
+    if (id === "guessLetter") {
+      resetGuess();
+    }
+    clearGuessResult();
+    if (id === "locateLetter") {
+      resetLocateLetter();
+    }
+  }
+
+  function clearGuessResult() {
+    document.getElementById("resultMessage").textContent = "";
+    document.getElementById("wordInput").value = "";
+    document.getElementById("guessSelect").value = "";
+    document.getElementById("wordDisplay").textContent = "";
+  }
+
+  function showPopup(mark, color, text) {
+    const popup = document.getElementById("popup");
+    document.getElementById("popupMark").textContent = mark;
+    document.getElementById("popupText").textContent = text;
+    popup.style.color = color;
+    popup.style.display = "flex";
+    if (!isMuted) {
+      if (mark === "✔") {
+        document.getElementById("soundCorrect").play();
+      } else {
+        document.getElementById("soundWrong").play();
+      }
+    }
+    setTimeout(() => (popup.style.display = "none"), 2000);
+  }
+
+  document.getElementById("wordInput").addEventListener("keydown", function (e) {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleWordEntered();
+    }
+  });
+
+  document.getElementById("guessSelect").addEventListener("change", checkGuess);
+
+  // ==== التعديل: اعتبار "ا" و"أ" نفس الشيء ====
+  function checkGuess() {
+    const guess = document.getElementById("guessSelect").value;
+    const resultDiv = document.getElementById("resultMessage");
+    if (!guess || !wordEntered) return;
+
+    let firstLetter = wordEntered[0];
+    // اعتبر "ا" و"أ" مكافئين
+    if (
+      (guess === "ا" && firstLetter === "أ") ||
+      (guess === "أ" && firstLetter === "ا")
+    ) {
+      resultDiv.textContent = "✔ إجابة صحيحة!";
+      resultDiv.style.color = "green";
+      showPopup("✔", "green", "أحسنت! الإجابة صحيحة");
+    } else if (guess === firstLetter) {
+      resultDiv.textContent = "✔ إجابة صحيحة!";
+      resultDiv.style.color = "green";
+      showPopup("✔", "green", "أحسنت! الإجابة صحيحة");
+    } else {
+      resultDiv.textContent = "❌ حاول مرة أخرى!";
+      resultDiv.style.color = "red";
+      showPopup("❌", "red", "خطأ! جرّب مرة أخرى");
+    }
+  }
+
+  function handleWordEntered() {
+    const word = document.getElementById("wordInput").value.trim();
+    if (!word) return;
+
+    const firstLetter = word[0];
+    const wordDisplay = document.getElementById("wordDisplay");
+    wordDisplay.innerHTML = `<span style="color: gold; font-weight: bold;">${firstLetter}</span>${word.slice(1)}`;
+
+    document.getElementById("inputContainer").style.display = "none";
+    document.getElementById("guessSection").style.display = "flex";
+    document.getElementById("newWordBtn").style.display = "inline-block";
+
+    wordEntered = word;
+  }
+
+  function resetGuess() {
+    document.getElementById("wordInput").value = "";
+    document.getElementById("inputContainer").style.display = "block";
+    document.getElementById("wordInput").style.display = "block";
+    document.getElementById("guessSection").style.display = "none";
+    document.getElementById("newWordBtn").style.display = "none";
+    document.getElementById("resultMessage").textContent = "";
+    document.getElementById("wordDisplay").textContent = "";
+    document.getElementById("guessSelect").value = "";
+    wordEntered = "";
+    document.getElementById("wordInput").focus();
+  }
+
+  document.querySelectorAll("button, select").forEach(el => {
+    el.addEventListener("click", () => {
+      if (!isMuted) {
+        const soundClick = document.getElementById("soundClick");
+        soundClick.currentTime = 0;
+        soundClick.play();
+      }
+    });
+  });
+
+  /*---------- تحديد موقع الحرف ----------*/
+  const locateWordInput = document.getElementById("locateWordInput");
+  const locLetterDisplay = document.getElementById("locLetterDisplay");
+  const locWordDisplay = document.getElementById("locWordDisplay");
+  const locChoicesDiv = document.getElementById("locChoices");
+  const locNewWordBtn = document.getElementById("locNewWordBtn");
+  const locFeedbackPopup = document.getElementById("locFeedbackPopup");
+
+  let selectedLetter_locate = "";
+  let currentWord_locate = "";
+  let correctPosition_locate = "";
+  let correctIndex_locate = -1; // فهرس الحرف الصحيح
+
+  function resetLocateLetter() {
+    if (!locateWordInput) return;
+    locateWordInput.value = "";
+    locateWordInput.style.display = "inline-block";
+    locateWordInput.focus();
+    locLetterDisplay.textContent = "";
+    locWordDisplay.textContent = "";
+    locChoicesDiv.innerHTML = "";
+    locNewWordBtn.style.display = "none";
+    hideLocatePopup();
+  }
+
+  if (locNewWordBtn) {
+    locNewWordBtn.addEventListener("click", resetLocateLetter);
+  }
+
+  if (locateWordInput) {
+    locateWordInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        handleLocateWordSubmit();
+        locateWordInput.style.display = "none";
+      }
+    });
+  }
+
+  // التعديل: تلوين فقط الحرف المطلوب
+  function handleLocateWordSubmit() {
+    const word = locateWordInput.value.trim();
+    if (!word || word.length < 3) {
+      showLocatePopup("❗ يرجى إدخال كلمة تحتوي على 3 أحرف على الأقل", "#c82333");
+      setTimeout(() => { locateWordInput.focus(); }, 1000);
+      return;
+    }
+    currentWord_locate = word;
+    // اختر فهرس عشوائي للحرف
+    const randomIndex = Math.floor(Math.random() * word.length);
+    selectedLetter_locate = word[randomIndex];
+    correctIndex_locate = randomIndex;
+    correctPosition_locate = getLocateCorrectPosition(randomIndex);
+
+    locLetterDisplay.textContent = `أين يقع حرف "${selectedLetter_locate}" في الكلمة؟`;
+
+    // تلوين فقط الحرف في الموضع الصحيح
+    locWordDisplay.innerHTML = [...word].map((ch, idx) => {
+      return (ch === selectedLetter_locate && idx === randomIndex)
+        ? `<span class="loc-highlight">${ch}</span>`
+        : ch;
+    }).join("");
+
+    locChoicesDiv.innerHTML = "";
+    const positions = ["start", "middle", "end"];
+    const labels = {
+      start: "أول الكلمة",
+      middle: "وسط الكلمة",
+      end: "آخر الكلمة"
+    };
+
+    positions.forEach(pos => {
+      const btn = document.createElement("button");
+      btn.className = "loc-choice-button";
+      btn.textContent = labels[pos];
+      btn.setAttribute("data-position", pos);
+      btn.addEventListener("click", () => {
+        const chosen = btn.getAttribute("data-position");
+        if (chosen === correctPosition_locate) {
+          showLocatePopup("✔ إجابة صحيحة", "#28a745");
+          if (!isMuted) document.getElementById("soundCorrect").play();
+          locNewWordBtn.style.display = "inline-block";
+          disableLocateChoices();
+        } else {
+          showLocatePopup("❌ حاول مرة أخرى", "#c82333");
+          if (!isMuted) document.getElementById("soundWrong").play();
+        }
+      });
+      locChoicesDiv.appendChild(btn);
+    });
+  }
+
+  // تعديل getLocateCorrectPosition لقبول الفهرس
+  function getLocateCorrectPosition(index) {
+    if (index === 0) return "start";
+    else if (index === currentWord_locate.length - 1) return "end";
+    else return "middle";
+  }
+
+  function disableLocateChoices() {
+    locChoicesDiv.querySelectorAll(".loc-choice-button").forEach(btn => {
+      btn.disabled = true;
+    });
+  }
+
+  function showLocatePopup(message, color) {
+    locFeedbackPopup.textContent = message;
+    locFeedbackPopup.style.backgroundColor = color;
+    locFeedbackPopup.style.display = "block";
+    setTimeout(hideLocatePopup, 2000);
+  }
+
+  function hideLocatePopup() {
+    locFeedbackPopup.style.display = "none";
+  }
+
+</script>
+</body>
+</html>
